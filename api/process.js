@@ -23,7 +23,13 @@ async function handler(req, res) {
 
   if (audio.length === 0) return res.status(400).end('no audio');
 
-  const pcm = await processAudioAndImage(audio, image);
+  let pcm;
+  try {
+    pcm = await processAudioAndImage(audio, image);
+  } catch (err) {
+    console.error('[process] pipeline error:', err);
+    return res.status(500).json({ error: err.message });
+  }
 
   res.setHeader('Content-Type', 'application/octet-stream');
   res.setHeader('Content-Length', pcm.length);
